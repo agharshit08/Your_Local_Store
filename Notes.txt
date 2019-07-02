@@ -5,3 +5,33 @@ These are two differenet routes
 router.get('/admin/add-product' ...
 router.post('/admin/add-product' ...
 
+Need of callback
+
+static fetchAll() {
+
+        const p = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
+
+        fs.readFile(p, (err, fileContent) => {
+            if (err) {
+                return [];
+            }
+            return JSON.parse(fileContent);
+        });
+}
+
+
+This function will not work like this in our model, because the way JS and
+Node.js works it will never execute the return statements.
+So, we need to register a callback as below.
+
+static fetchAll(cb) {
+
+        const p = path.join(path.dirname(process.mainModule.filename), 'data', 'products.json');
+
+        fs.readFile(p, (err, fileContent) => {
+            if (err) {
+                cb([]);
+            }
+            cb(JSON.parse(fileContent));
+        });
+}
