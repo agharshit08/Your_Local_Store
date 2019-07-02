@@ -1,28 +1,24 @@
 const path = require('path');
-const bodyParser = require('body-parser');
-const express = require('express');
 
-const adminRoutes =  require('./routes/admin');
-const shopRoutes = require('./routes/shop');
+const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
 
-// Parsing the body for incoming requests.
-app.use(bodyParser.urlencoded({ extended: false }));
+app.set('view engine', 'ejs');
+app.set('views', 'views');
 
-// Giving access to Public folder to serve the CSS files.
+const adminData = require('./routes/admin');
+const shopRoutes = require('./routes/shop');
+
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Admin routes (Add product and products page) will be of type /admin/add-product.
-app.use('/admin', adminRoutes);
-
-// User Route. What user will see.
+app.use('/admin', adminData.routes);
 app.use(shopRoutes);
 
-// Catch all middleware Route. Here status is set to 404 before sending response
-app.use((req, res, send) => {
-    res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
+app.use((req, res, next) => {
+  res.status(404).render('404', { pageTitle: 'Page Not Found' });
 });
 
-// Creating a server and listening to the requests.
 app.listen(3000);
