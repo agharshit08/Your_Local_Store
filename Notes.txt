@@ -1,0 +1,7 @@
+Same path like '/admin/product' can be used in two routes if the request are different like get and post.
+
+These are two differenet routes
+
+router.get('/admin/add-product' ...
+router.post('/admin/add-product' ...
+
