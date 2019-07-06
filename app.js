@@ -18,25 +18,39 @@ const shopRoutes = require('./routes/shop');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use((req, res, next) => {
-//   User.findById('5d1f7acf1bcabc2f48aba692')
-//     .then(user => {
-//       req.user = new User(user.name, user.email, user.cart, user._id);
-//       next();
-//     })
-//     .catch(err => console.log(err));
-// });
+app.use((req, res, next) => {
+  User.findById('5d208cd5720685547cf01b99')
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err => console.log(err));
+});
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
 app.use(errorController.get404);
+
 mongoose.connect(
   'mongodb+srv://Harshit:root@cluster0-e1hi8.mongodb.net/shop?retryWrites=true&w=majority',
-  {useNewUrlParser: true}
+  { useNewUrlParser: true }
 )
-.then(result => {
-  console.log('Connected');
-  app.listen(3000);
-})
-.catch(err => console.log('Error occured here--'));
+  .then(result => {
+    User.findOne().then(user => {
+      if (!user) {
+        const user = new User({
+          name: 'Harshit',
+          email: 'harshitag785@gmail.com',
+          cart: {
+            items: []
+          }
+        });
+        user.save();
+      }
+    })
+    .catch(err => console.log('User exists'));
+    console.log('Connected');
+    app.listen(3000);
+  })
+  .catch(err => console.log(err));
