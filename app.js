@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csurf = require('csurf');
+const flash = require('connect-flash');
 
 const errorController = require('./controllers/error');
 const User = require('./models/user');
@@ -36,6 +37,7 @@ app.use(
 );
 
 app.use(csrfProtection);
+app.use(flash());
 
 app.use((req, res, next) => {
   if (!req.session.user) {
@@ -66,7 +68,7 @@ mongoose
     useNewUrlParser: true
   })
   .then(result => {
-    console.log('Connected to DB');
+    console.log('Connected to Database');
     app.listen(3000);
   })
   .catch(err => {
