@@ -35,10 +35,9 @@ exports.getIndex = (req, res, next) => {
   Product.find()
     .then(products => {
       res.render('shop/index', {
-        prods: products,
+        prods: products, 
         pageTitle: 'Shop',
-        path: '/',
-        isAuthenticated: req.session.isLoggedIn
+        path: '/'
       });
     })
     .catch(err => {
