@@ -40,28 +40,45 @@ app.use(csrfProtection);
 app.use(flash());
 
 app.use((req, res, next) => {
-  if (!req.session.user) {
-    return next();
-  }
-  User.findById(req.session.user._id)
-    .then(user => {
-      req.user = user;
-      next();
-    })
-    .catch(err => console.log(err));
-});
-
-app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfToken = req.csrfToken();
   next();
 });
 
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then(user => {
+      if(!user) {
+        return next();
+      }
+      req.user = user;
+      next();
+    })// Inside of async code use next() for error handling
+    .catch(err => {
+      next(new Error(err));
+    });
+});
+
+
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.use(errorController.get500);
 app.use(errorController.get404);
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+  res.status(500).render('500', {
+    pageTitle: 'Page Not Found',
+    path: '/500',
+    isAuthenticated: req.session.isLoggedIn
+  });
+});
 
 mongoose
   .connect(MONGODB_URI, {
