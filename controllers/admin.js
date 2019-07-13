@@ -10,9 +10,28 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
-  const imageUrl = req.file;
+  const image = req.file;
   const price = req.body.price;
   const description = req.body.description;
+
+  if(!image){
+    return res.render('admin/edit-product', {
+      pageTitle: 'Add Product',
+      path: '/admin/edit-product',
+      editing: editMode,
+      product: {
+        title: title,
+        price: price,
+        description: description
+      },
+      errorMessage: 'File is not image',
+      validationErrors: []
+    });
+  }
+
+  const imageUrl = image.path;
+  
+
   const product = new Product({
     title: title,
     price: price,
